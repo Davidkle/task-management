@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableViewOptions } from '@/components/ui/data-table-view-options';
-import { statuses, priorities } from '@/app/app/data';
+import { statuses, priorities } from '@/app/app/data-table/data';
 import { DataTableFacetedFilter } from '@/components/ui/data-table-faceted-filter';
 
 interface DataTableToolbarProps<TData> {

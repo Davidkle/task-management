@@ -19,7 +19,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { DataTablePagination } from '@/components/ui/data-table-pagination';
-import { DataTableToolbar } from '@/app/app/data-table-toolbar';
+import { DataTableToolbar } from '@/app/app/data-table/data-table-toolbar';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
