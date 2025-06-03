@@ -5,15 +5,22 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "prisma:clean": "rm -rf ./node-modules/.prisma/client && yarn build",
+    "prisma:dev": "dotenv -e .env.development -- npx prisma migrate dev",
+    "prisma:dev-reset": "dotenv -e .env.development -- prisma db push --force-reset",
+    "prisma:dev-migration-only": "dotenv -e .env.development -- npx prisma migrate dev --create-only"
   },
   "dependencies": {
+    "@prisma/client": "^6.8.2",
+    "@prisma/extension-accelerate": "^2.0.1",
     "@radix-ui/react-checkbox": "^1.3.2",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/postcss": "^4.1.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^16.5.0",
     "lucide-react": "^0.511.0",
     "next": "15.3.3",
     "postcss": "^8.5.4",
@@ -25,6 +32,8 @@
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19",
+    "prisma": "^6.8.2",
+    "tsx": "^4.19.4",
     "tw-animate-css": "^1.3.3",
     "typescript": "^5"
   }
