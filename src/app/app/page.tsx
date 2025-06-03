@@ -43,7 +43,7 @@ export default function Page() {
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="flex px-4 pb-[16px]">
           <DataTable data={tasks} columns={columns} />
         </div>
       </SidebarInset>

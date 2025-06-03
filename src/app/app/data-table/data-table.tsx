@@ -59,12 +59,14 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
+  // 64px is the height of the header
+  // 16px is the bottom padding of the page
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full h-[calc(100vh-80px)]">
       <DataTableToolbar table={table} />
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
+      <div className="rounded-md flex flex-col flex-1 border overflow-hidden">
+        <Table className="relative">
+          <TableHeader className="sticky top-0 bg-background z-10">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

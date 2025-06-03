@@ -36,7 +36,7 @@ export function NavProjects({
       <SidebarGroupLabel className="mb-4">
         <div className="w-full flex items-center justify-between">
           <div>Categories</div>
-          <Button variant="default" className="w-12 h-8" size="icon">
+          <Button variant="default" className="w-12 h-7" size="icon">
             <Plus />
           </Button>
         </div>
