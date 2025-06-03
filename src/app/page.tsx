@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, Clock, Users, Zap, ArrowRight, Star } from 'lucide-react';
 
-export default function LandingPage() {
+export default function Page() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Navigation */}
@@ -40,13 +40,10 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-3">
-              Watch Demo
-            </Button>
           </div>
           <div className="flex items-center justify-center mt-8 text-sm text-gray-500">
             <Star className="h-4 w-4 text-yellow-400 mr-1" />
-            <span>Trusted by 10,000+ productive people</span>
+            <span>Trusted by ONE productive person</span>
           </div>
         </div>
       </section>
