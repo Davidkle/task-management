@@ -8,9 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 
 import { CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
+import { dismissToast, showToast } from '@/lib/toast';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,10 +22,37 @@ export default function LoginPage() {
     rememberMe: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const router = useRouter();
+
+  const LOGIN_FAILED_MESSAGE = 'Login failed';
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login form submitted:', formData);
+    try {
+      const { data, error } = await authClient.signIn.email(
+        {
+          email: formData.email,
+          password: formData.password,
+          callbackURL: '/app',
+          rememberMe: formData.rememberMe,
+        },
+        {
+          onRequest: () => {
+            showToast({ id: 'login-loading', message: 'Signing you in...', type: 'loading' });
+          },
+          onSuccess: () => {
+            dismissToast('login-loading');
+            router.push('/app');
+          },
+          onError: (ctx) => {
+            dismissToast('login-loading');
+            showToast({ id: 'login-error', message: ctx.error.message || LOGIN_FAILED_MESSAGE, type: 'error' });
+          },
+        }
+      );
+    } catch (err: any) {
+      // TODO: Handle catastrophic error
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

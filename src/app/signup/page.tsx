@@ -9,6 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
+import { dismissToast, showToast } from '@/lib/toast';
+import { useRouter } from 'next/navigation';
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,11 +21,41 @@ export default function SignupPage() {
     password: '',
     confirmPassword: '',
   });
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const SIGNUP_FAILED_MESSAGE = 'Signup failed';
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle signup logic here
-    console.log('Signup form submitted:', formData);
+    if (formData.password !== formData.confirmPassword) {
+      showToast({ id: 'signup-loading', message: 'Passwords do not match', type: 'error' });
+      return;
+    }
+    try {
+      const { data, error } = await authClient.signUp.email(
+        {
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          callbackURL: '/app',
+        },
+        {
+          onRequest: () => {
+            showToast({ id: 'signup-loading', message: 'Creating your account...', type: 'loading' });
+          },
+          onSuccess: () => {
+            dismissToast('signup-loading');
+            router.push('/app');
+          },
+          onError: (ctx) => {
+            dismissToast('signup-loading');
+            showToast({ id: 'signup-error', message: ctx.error.message || SIGNUP_FAILED_MESSAGE, type: 'error' });
+          },
+        }
+      );
+    } catch (err: any) {
+      // TODO: Handle catastrophic error
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
