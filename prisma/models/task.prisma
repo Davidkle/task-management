@@ -13,6 +13,8 @@ model Task {
   
   categoryId  String?
   category    Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@map("task")
 }
 
 model Category {
@@ -26,6 +28,8 @@ model Category {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   tasks     Task[]
+
+  @@map("category")
 }
 
 enum TaskStatus {
