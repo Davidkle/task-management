@@ -73,7 +73,7 @@ export const POST = withUser(async (req: NextRequest, user: { id: string }) => {
       orderBy: { position: 'desc' },
     });
 
-    const nextPosition = lastTask?.position ? lastTask.position + 1 : DEFAULT_POSITION;
+    const nextPosition = lastTask?.position ? lastTask.position + DEFAULT_POSITION : DEFAULT_POSITION;
 
     const task = await prisma.task.create({
       data: { ...parsed.data.task, categoryId: parsed.data.categoryId, userId: user.id, position: nextPosition },

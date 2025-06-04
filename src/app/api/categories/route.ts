@@ -33,7 +33,7 @@ export const POST = withUser(async (req: NextRequest, user: { id: string }) => {
       orderBy: { position: 'desc' },
     });
 
-    const nextPosition = lastCategory?.position ? lastCategory.position + 1 : DEFAULT_POSITION;
+    const nextPosition = lastCategory?.position ? lastCategory.position + DEFAULT_POSITION : DEFAULT_POSITION;
 
     const category = await prisma.category.create({
       data: { ...parsed.data, userId: user.id, position: nextPosition },
