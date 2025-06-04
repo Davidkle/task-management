@@ -34,7 +34,7 @@ import {
   useSidebar,
 } from 'components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { CategoryCreateModal } from '@/app/app/frame/CategoryCreateModal';
+import { CategoryCreateUpdateModal } from '@/app/app/frame/CategoryCreateUpdateModal';
 import { useSelectedCategory } from '@/hooks/useSelectedCategory';
 import { useCategories } from '@/hooks/useCategories';
 
@@ -48,6 +48,7 @@ export function NavCategories() {
   const { isMobile } = useSidebar();
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [showCreateModal, setShowCreateModal] = React.useState(false);
+  const [editingCategory, setEditingCategory] = React.useState<Category | null>(null);
   const { setSelectedCategory } = useSelectedCategory();
 
   const {
@@ -82,9 +83,14 @@ export function NavCategories() {
     }
   }
 
-  async function handleCreateCategory(data: { name: string; color: string }) {
-    await createCategoryAsync(data);
-    setShowCreateModal(false);
+  async function handleCreateOrUpdateCategory(data: { id?: string; name: string; color: string }) {
+    if (data.id) {
+      await updateCategoryAsync({ id: data.id, input: { name: data.name, color: data.color } });
+      setEditingCategory(null);
+    } else {
+      await createCategoryAsync({ name: data.name, color: data.color });
+      setShowCreateModal(false);
+    }
   }
 
   async function handleDeleteCategory(categoryId: string) {
@@ -137,7 +143,12 @@ export function NavCategories() {
               <span>View Tasks</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditingCategory(category);
+              }}
+            >
               <Pencil className="text-muted-foreground" />
               <span>Edit Category</span>
             </DropdownMenuItem>
@@ -192,7 +203,15 @@ export function NavCategories() {
           </SidebarMenu>
         </SortableContext>
       </DndContext>
-      <CategoryCreateModal open={showCreateModal} onOpenChange={setShowCreateModal} onSubmit={handleCreateCategory} />
+      <CategoryCreateUpdateModal
+        open={showCreateModal || !!editingCategory}
+        onOpenChange={(open) => {
+          setShowCreateModal(open && !editingCategory);
+          if (!open) setEditingCategory(null);
+        }}
+        onSubmit={handleCreateOrUpdateCategory}
+        category={editingCategory}
+      />
     </SidebarGroup>
   );
 }

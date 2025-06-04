@@ -11,8 +11,10 @@ const CategoryCreateSchema = z.object({
 const DEFAULT_POSITION = 1_000;
 
 export const GET = withUser(async (req: NextRequest, user: { id: string }) => {
-  // TODO: Need to add pagination
-  const categories = await prisma.category.findMany({ where: { userId: user.id } });
+  const categories = await prisma.category.findMany({
+    where: { userId: user.id },
+    orderBy: { position: 'desc' },
+  });
   return NextResponse.json({ success: true, data: categories });
 });
 

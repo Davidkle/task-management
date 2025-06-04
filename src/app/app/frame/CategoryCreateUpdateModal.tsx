@@ -2,6 +2,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import type { Category } from '@prisma/client';
 
 const COLOR_OPTIONS = [
   '#fbcfe8', // pink-200
@@ -28,23 +29,37 @@ const COLOR_OPTIONS = [
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: { name: string; color: string }) => void;
+  onSubmit: (data: { id?: string; name: string; color: string }) => void;
+  category?: Category | null;
 };
 
-export function CategoryCreateModal({ open, onOpenChange, onSubmit }: Props) {
+export function CategoryCreateUpdateModal({ open, onOpenChange, onSubmit, category }: Props) {
   const [name, setName] = React.useState('');
   const [color, setColor] = React.useState<string | undefined>();
   const [touched, setTouched] = React.useState(false);
+
+  React.useEffect(() => {
+    if (category) {
+      setName(category.name);
+      setColor(category.color);
+    } else {
+      setName('');
+      setColor(undefined);
+    }
+  }, [category, open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(true);
 
     if (name && color) {
-      onSubmit({ name, color });
+      if (category) {
+        onSubmit({ id: category.id, name, color });
+      } else {
+        onSubmit({ name, color });
+      }
       setName('');
       setColor(undefined);
-
       setTouched(false);
       onOpenChange(false);
     }
@@ -54,7 +69,7 @@ export function CategoryCreateModal({ open, onOpenChange, onSubmit }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Category</DialogTitle>
+          <DialogTitle>{category ? 'Edit Category' : 'Add Category'}</DialogTitle>
         </DialogHeader>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <Input
@@ -93,7 +108,7 @@ export function CategoryCreateModal({ open, onOpenChange, onSubmit }: Props) {
               className="px-4 py-2 rounded bg-primary text-white hover:bg-primary/90"
               disabled={!name || !color}
             >
-              Submit
+              {category ? 'Update' : 'Submit'}
             </Button>
           </div>
         </form>
