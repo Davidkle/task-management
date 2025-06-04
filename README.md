@@ -37,11 +37,6 @@ A todo list app
 - Use SPA, CSR because of frequent atomic user interactions (drag-drop, real-time updates, filtering)
 - Tanstack query: server state management and caching. Will also be used for local state management where needed.
 
-State library
-
-- Tanstack Query: for server state management
-- Zustand: lightweight, for client side state management
-
 #### Alternatives and Other Considerations
 
 - Use Redux when the application grows
