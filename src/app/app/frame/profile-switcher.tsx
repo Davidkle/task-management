@@ -13,7 +13,6 @@ import {
 } from 'components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from 'components/ui/sidebar';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 
 export function ProfileSwitcher({
   profiles,
