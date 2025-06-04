@@ -10,6 +10,7 @@ import { columns } from '@/app/app/data-table/columns';
 import { DataTable } from '@/app/app/data-table/DataTable';
 import { taskSchema } from '@/app/app/data-table/schema';
 import exampleTasks from '@/app/app/data-table/tasks.json';
+import { ViewTask } from '@/app/app/frame/ViewTask';
 
 export const metadata: Metadata = {
   title: 'TaskFlow',
@@ -36,7 +37,8 @@ export default function Page() {
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex px-4 pb-[16px]">
+        <div className="flex px-4 pb-[16px] relative">
+          <ViewTask />
           <DataTable data={tasks} columns={columns} />
         </div>
       </SidebarInset>
