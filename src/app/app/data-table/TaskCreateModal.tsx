@@ -46,7 +46,7 @@ export function TaskCreateModal({ open, onOpenChange }: TaskCreateModalProps) {
           <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
           <textarea
             placeholder="Description (optional)"
-            className="h-24 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+            className="h-24 px-3 py-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
