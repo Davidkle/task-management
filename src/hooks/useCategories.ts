@@ -1,19 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { Category } from '@prisma/client';
 
-export type Category = {
-  id: string;
-  name: string;
-  color: string;
-  position: number;
-};
-
-export type CategoryInput = {
-  name: string;
-  color: string;
-  position?: number;
-};
-
-export type CategoryUpdateInput = Partial<CategoryInput>;
+export type CategoryCreateInput = Partial<Category>;
+export type CategoryUpdateInput = Partial<Category>;
 
 const fetchCategories = async (): Promise<Category[]> => {
   const res = await fetch('/api/categories');
@@ -29,7 +18,7 @@ const fetchCategory = async (id: string): Promise<Category> => {
   return data.data;
 };
 
-const createCategory = async (input: CategoryInput): Promise<Category> => {
+const createCategory = async (input: CategoryCreateInput): Promise<Category> => {
   const res = await fetch('/api/categories', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
