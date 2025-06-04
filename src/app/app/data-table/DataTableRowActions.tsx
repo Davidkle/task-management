@@ -21,11 +21,11 @@ type Props = {
 
 export function DataTableRowActions({ row }: Props) {
   const task = row.original;
-  const { deleteTask } = useTasks();
+  const { deleteTaskAsync } = useTasks();
   const { setSelectedTask } = useSelectedTask();
 
   const handleDelete = async (id: string) => {
-    await deleteTask(id);
+    await deleteTaskAsync(id);
     setSelectedTask(null);
   };
 

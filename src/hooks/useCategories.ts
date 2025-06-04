@@ -99,17 +99,14 @@ export function useCategories() {
     error: categoriesQuery.error,
 
     // Create
-    createCategory: createCategoryMutation.mutate,
     createCategoryAsync: createCategoryMutation.mutateAsync,
     isCreating: createCategoryMutation.status === 'pending',
 
     // Update
-    updateCategory: updateCategoryMutation.mutate,
     updateCategoryAsync: updateCategoryMutation.mutateAsync,
     isUpdating: updateCategoryMutation.status === 'pending',
 
     // Delete
-    deleteCategory: deleteCategoryMutation.mutate,
     deleteCategoryAsync: deleteCategoryMutation.mutateAsync,
     isDeleting: deleteCategoryMutation.status === 'pending',
 

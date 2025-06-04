@@ -89,17 +89,14 @@ export function useTasks() {
     error: tasksQuery.error,
 
     // Create
-    createTask: createTaskMutation.mutate,
     createTaskAsync: createTaskMutation.mutateAsync,
     isCreating: createTaskMutation.status === 'pending',
 
     // Update
-    updateTask: updateTaskMutation.mutate,
     updateTaskAsync: updateTaskMutation.mutateAsync,
     isUpdating: updateTaskMutation.status === 'pending',
 
     // Delete
-    deleteTask: deleteTaskMutation.mutate,
     deleteTaskAsync: deleteTaskMutation.mutateAsync,
     isDeleting: deleteTaskMutation.status === 'pending',
 

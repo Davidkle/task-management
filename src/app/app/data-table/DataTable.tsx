@@ -50,7 +50,7 @@ export function DataTable() {
   const [tableData, setTableData] = React.useState<TaskWithCategory[]>([]);
 
   const { setSelectedTask } = useSelectedTask();
-  const { tasks, updateTask } = useTasks();
+  const { tasks, updateTaskAsync } = useTasks();
 
   React.useEffect(() => {
     if (tasks) {
@@ -121,8 +121,8 @@ export function DataTable() {
         }
         moved.position = newPosition;
 
-        // Send update to server
-        updateTask({ id: moved.id, input: { position: newPosition } });
+        // Send update to server. Fire and forget
+        updateTaskAsync({ id: moved.id, input: { position: newPosition } });
 
         return updated;
       });
