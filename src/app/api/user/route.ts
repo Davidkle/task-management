@@ -30,12 +30,18 @@ export async function GET(request: NextRequest) {
     const userSessions = sessions.filter((s) => s.user.id === user.id);
     // Is any session for this user the active one?
     const isActive = userSessions.some((s) => s.session.token === activeToken);
-    // Optionally, include all session tokens for this user
+
+    let sessionToken: string | undefined;
+    if (isActive) {
+      sessionToken = userSessions.find((s) => s.session.token === activeToken)?.session.token;
+    } else {
+      sessionToken = userSessions[0].session.token;
+    }
 
     return {
       ...user,
       active: isActive,
-      sessionToken: userSessions.find((s) => s.session.token === activeToken)?.session.token,
+      sessionToken,
     };
   });
 

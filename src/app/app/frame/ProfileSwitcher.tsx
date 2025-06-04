@@ -65,7 +65,12 @@ export function ProfileSwitcher() {
             {profiles?.map((profile, index) => (
               <DropdownMenuItem
                 key={profile.id}
-                onClick={() => setActiveProfileAsync(profile.id)}
+                onClick={() => {
+                  if (profile.sessionToken) {
+                    authClient.multiSession.setActive({ sessionToken: profile.sessionToken });
+                    window.location.reload();
+                  }
+                }}
                 className="gap-2 p-2 flex items-center justify-between group"
               >
                 <div className="flex items-center gap-2">
