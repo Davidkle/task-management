@@ -15,11 +15,14 @@ A todo list app
 1. Login/Signup
 2. CRUD operations for Tasks
 3. CRUD operations for Categories
-4. Task search (title, description)
-5. Mobile web support
+4. Task search (title, description, status, filters)
+5. Switch between multiple profiles
+6. Assign tasks using categories
+7. Pagination
 
 ## TODO:
 
+- Mobile support (need to to through and double check the css)
+- Write more unit test and E2E tests. Need to setup Jest and Puppeteer. Also setup some sort of staging data.
 - Setup CI/CD to deploy onto Vercel
-- Write more unit test and E2E tests
 - UI needs more polish
