@@ -5,6 +5,7 @@ model Task {
   dueDate     DateTime?
   status      TaskStatus @default(PENDING)
   position    Int        // For drag-drop ordering
+
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   
@@ -23,6 +24,8 @@ model Category {
   color     String   @default("#3B82F6")
   icon      String?
   createdAt DateTime @default(now())
+
+  position    Int        // For drag-drop ordering
   
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
