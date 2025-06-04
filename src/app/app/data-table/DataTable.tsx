@@ -38,26 +38,28 @@ import { DataTablePagination } from '@/components/ui/DataTablePagination';
 import { DataTableToolbar } from '@/app/app/data-table/DataTableToolbar';
 import { useSelectedTask } from '@/hooks/useSelectedTask';
 
-interface DataTableProps<TData extends TaskWithCategory, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-}
+import { columns } from '@/app/app/data-table/columns';
+import { useTasks } from '@/hooks/useTasks';
 
-export function DataTable<TData extends TaskWithCategory, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [tableData, setTableData] = React.useState<TData[]>(data);
+  const [tableData, setTableData] = React.useState<TaskWithCategory[]>([]);
+
   const { setSelectedTask } = useSelectedTask();
+  const { tasks } = useTasks();
 
   React.useEffect(() => {
-    setTableData(data);
-  }, [data]);
+    if (tasks) {
+      setTableData(tasks);
+    }
+  }, []);
 
   const table = useReactTable({
     data: tableData,
-    columns,
+    columns: columns as ColumnDef<TaskWithCategory>[],
     state: {
       sorting,
       columnVisibility,
@@ -108,7 +110,7 @@ export function DataTable<TData extends TaskWithCategory, TValue>({ columns, dat
   );
 
   // Draggable row
-  const DraggableRow = ({ row }: { row: Row<TData> }) => {
+  const DraggableRow = ({ row }: { row: Row<TaskWithCategory> }) => {
     const { transform, transition, setNodeRef, isDragging, attributes, listeners } = useSortable({ id: row.id });
 
     const style = {

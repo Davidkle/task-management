@@ -1,28 +1,39 @@
 'use client';
 
+import * as React from 'react';
 import { Table } from '@tanstack/react-table';
 import { X } from 'lucide-react';
 import { useState } from 'react';
+import { TaskStatus } from '@prisma/client';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { statuses, sampleData } from '@/app/app/data-table/data';
 import { DataTableFacetedFilter } from '@/components/ui/DataTableFacetedFilter';
 import { TaskCreateModal } from '@/app/app/data-table/TaskCreateModal';
+import { useCategories } from '@/hooks/useCategories';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
 
+const statuses = Object.values(TaskStatus).map((status) => ({
+  label: status,
+  value: status,
+}));
+
 export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
   const [open, setOpen] = useState(false);
   const isFiltered = table.getState().columnFilters.length > 0;
+  const { categories } = useCategories();
 
-  // TODO: Memoize this
-  const categoryOptions = sampleData.categories.map((category) => ({
-    label: category.name,
-    value: category.id,
-  }));
+  const categoryOptions = React.useMemo(
+    () =>
+      categories?.map((category) => ({
+        label: category.name,
+        value: category.id,
+      })) ?? [],
+    [categories]
+  );
 
   return (
     <div className="flex items-center justify-between">

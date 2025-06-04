@@ -1,15 +1,14 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { sampleData, statuses } from '@/app/app/data-table/data';
-import { Task } from '@/app/app/data-table/schema';
 import { DataTableColumnHeader } from '@/components/ui/DataTableColumnHeader';
 import { DataTableRowActions } from '@/app/app/data-table/DataTableRowActions';
+import { TaskWithCategory } from '@/lib/types';
+import { useCategories } from '@/hooks/useCategories';
 
-export const columns: ColumnDef<Task>[] = [
+export const columns: ColumnDef<TaskWithCategory>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -53,15 +52,11 @@ export const columns: ColumnDef<Task>[] = [
     accessorKey: 'status',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
     cell: ({ row }) => {
-      const status = statuses.find((status) => status.value === row.getValue('status'));
-
-      if (!status) {
-        return null;
-      }
+      const status = row.original.status;
 
       return (
         <div className="flex w-[100px] items-center gap-2">
-          <span>{status.label}</span>
+          <span>{status ?? '--'}</span>
         </div>
       );
     },
@@ -73,15 +68,14 @@ export const columns: ColumnDef<Task>[] = [
     accessorKey: 'category',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Category" />,
     cell: ({ row }) => {
-      const category = sampleData.categories.find((category) => category.id === row.original.category.id);
-      if (!category) {
-        return null;
-      }
+      const { categories } = useCategories();
+
+      const category = categories?.find((category) => category.id === row.original.category?.id);
 
       return (
         <div className={'flex items-center gap-2'}>
-          <span className="rounded-sm py-1 px-2 text-xs" style={{ backgroundColor: category.color }}>
-            {category.name}
+          <span className="rounded-sm py-1 px-2 text-xs" style={{ backgroundColor: category?.color ?? 'transparent' }}>
+            {category?.name ?? '--'}
           </span>
         </div>
       );

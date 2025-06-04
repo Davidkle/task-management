@@ -4,12 +4,8 @@ import { Separator } from 'components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from 'components/ui/sidebar';
 
 import { Metadata } from 'next';
-import { z } from 'zod';
 
-import { columns } from '@/app/app/data-table/columns';
 import { DataTable } from '@/app/app/data-table/DataTable';
-import { taskSchema } from '@/app/app/data-table/schema';
-import exampleTasks from '@/app/app/data-table/tasks.json';
 import { ViewTask } from '@/app/app/frame/ViewTask';
 
 export const metadata: Metadata = {
@@ -18,8 +14,6 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  const tasks = z.array(taskSchema).parse(exampleTasks);
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -39,7 +33,7 @@ export default function Page() {
         </header>
         <div className="flex px-4 pb-[16px] relative">
           <ViewTask />
-          <DataTable data={tasks} columns={columns} />
+          <DataTable />
         </div>
       </SidebarInset>
     </SidebarProvider>
