@@ -3,6 +3,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { withUser } from '@/lib/withUser';
 import { PaginatedResponse, TaskWithCategory } from '@/lib/types';
+import { Prisma, TaskStatus } from '@prisma/client';
 
 const DEFAULT_POSITION = 1_000;
 
@@ -17,20 +18,40 @@ const TaskCreateSchema = z.object({
 });
 
 export const GET = withUser(async (req: NextRequest, user: { id: string }) => {
-  // Parse query params for pagination
+  // Parse query params for pagination, search, and filters
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get('page') || '1', 25);
   const limit = parseInt(searchParams.get('limit') || '25', 25);
   const skip = (page - 1) * limit;
 
-  // Get total count for pagination
+  // New: search and filter params
+  const search = searchParams.get('search')?.trim() || '';
+  const status = searchParams.get('status') || undefined;
+  const categoryId = searchParams.get('categoryId') || undefined;
+
+  // Build Prisma where clause
+  const where: Prisma.TaskWhereInput = { userId: user.id };
+  if (search) {
+    where.OR = [
+      { title: { contains: search, mode: 'insensitive' } },
+      { description: { contains: search, mode: 'insensitive' } },
+    ];
+  }
+  if (status) {
+    where.status = status as TaskStatus;
+  }
+  if (categoryId) {
+    where.categoryId = categoryId;
+  }
+
+  // Get total count for pagination (with filters)
   const total = await prisma.task.count({
-    where: { userId: user.id },
+    where,
   });
 
-  // Get paginated tasks
+  // Get paginated tasks (with filters)
   const tasks = await prisma.task.findMany({
-    where: { userId: user.id },
+    where,
     orderBy: { position: 'desc' },
     include: {
       category: {

@@ -5,8 +5,21 @@ import type { Task } from '@prisma/client';
 export type TaskUpdateInput = Partial<Task>;
 export type TaskCreateInput = Partial<Task>;
 
-const fetchTasks = async (): Promise<TaskWithCategory[]> => {
-  const res = await fetch('/api/tasks');
+const fetchTasks = async (params?: {
+  search?: string;
+  status?: string;
+  categoryId?: string;
+  page?: number;
+  limit?: number;
+}): Promise<TaskWithCategory[]> => {
+  const query = new URLSearchParams();
+  if (params?.search) query.set('search', params.search);
+  if (params?.status) query.set('status', params.status);
+  if (params?.categoryId) query.set('categoryId', params.categoryId);
+  if (params?.page) query.set('page', params.page.toString());
+  if (params?.limit) query.set('limit', params.limit.toString());
+
+  const res = await fetch(`/api/tasks${query.toString() ? `?${query.toString()}` : ''}`);
   const data = await res.json();
   if (!res.ok) throw new Error(data?.error?.message || 'Failed to fetch tasks');
   return data.data;
@@ -47,13 +60,19 @@ const deleteTask = async (id: string): Promise<void> => {
   if (!res.ok) throw new Error(data?.error?.message || 'Failed to delete task');
 };
 
-export function useTasks() {
+export function useTasks(filters?: {
+  search?: string;
+  status?: string;
+  categoryId?: string;
+  page?: number;
+  limit?: number;
+}) {
   const queryClient = useQueryClient();
 
-  // Fetch all tasks
+  // Fetch all tasks with filters
   const tasksQuery = useQuery<TaskWithCategory[]>({
-    queryKey: ['tasks'],
-    queryFn: fetchTasks,
+    queryKey: ['tasks', filters],
+    queryFn: () => fetchTasks(filters),
   });
 
   // Create a task
