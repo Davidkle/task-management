@@ -2,17 +2,20 @@
 
 import { Table } from '@tanstack/react-table';
 import { X } from 'lucide-react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { statuses, sampleData } from '@/app/app/data-table/data';
 import { DataTableFacetedFilter } from '@/components/ui/DataTableFacetedFilter';
+import { TaskCreateModal } from '@/app/app/data-table/TaskCreateModal';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
 
 export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+  const [open, setOpen] = useState(false);
   const isFiltered = table.getState().columnFilters.length > 0;
 
   // TODO: Memoize this
@@ -44,8 +47,11 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
         )}
       </div>
       <div className="flex items-center gap-2">
-        <Button size="sm">Add Task</Button>
+        <Button size="sm" onClick={() => setOpen(true)}>
+          Add Task
+        </Button>
       </div>
+      <TaskCreateModal open={open} onOpenChange={setOpen} />
     </div>
   );
 }
