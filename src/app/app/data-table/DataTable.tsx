@@ -7,7 +7,6 @@ import {
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
-  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   Row,
@@ -26,7 +25,7 @@ import {
   type DragEndEvent,
   PointerSensor,
 } from '@dnd-kit/core';
-import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { TaskWithCategory } from '@/lib/types';
 
@@ -56,6 +55,7 @@ export function DataTable() {
   const debouncedSearch = useDebounce(search, 300);
   const debouncedStatus = useDebounce(status, 300);
   const debouncedCategoryId = useDebounce(categoryId, 300);
+
 
   const { tasks, updateTaskAsync } = useTasks({
     search: debouncedSearch || undefined,
@@ -88,7 +88,6 @@ export function DataTable() {
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),

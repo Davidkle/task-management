@@ -25,15 +25,19 @@ interface DataTableFacetedFilterProps<TData, TValue> {
     value: string;
     icon?: React.ComponentType<{ className?: string }>;
   }[];
+  value?: string[];
+  onChange?: (value: string[]) => void;
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
+  value,
+  onChange,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues();
-  const selectedValues = new Set(column?.getFilterValue() as string[]);
+  const selectedValues = new Set(value ?? (column?.getFilterValue() as string[]));
 
   return (
     <Popover>
@@ -78,13 +82,15 @@ export function DataTableFacetedFilter<TData, TValue>({
                   <CommandItem
                     key={option.value}
                     onSelect={() => {
+                      let newSelected = new Set(selectedValues);
                       if (isSelected) {
-                        selectedValues.delete(option.value);
+                        newSelected.delete(option.value);
                       } else {
-                        selectedValues.add(option.value);
+                        newSelected.add(option.value);
                       }
-                      const filterValues = Array.from(selectedValues);
+                      const filterValues = Array.from(newSelected);
                       column?.setFilterValue(filterValues.length ? filterValues : undefined);
+                      if (onChange) onChange(filterValues);
                     }}
                   >
                     <div
@@ -113,7 +119,10 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem
-                    onSelect={() => column?.setFilterValue(undefined)}
+                    onSelect={() => {
+                      column?.setFilterValue(undefined);
+                      if (onChange) onChange([]);
+                    }}
                     className="justify-center text-center"
                   >
                     Clear filters

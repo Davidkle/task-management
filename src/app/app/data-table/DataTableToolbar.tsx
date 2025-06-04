@@ -53,9 +53,11 @@ export function DataTableToolbar<TData>({
   React.useEffect(() => {
     table.getColumn('title')?.setFilterValue(search);
   }, [search, table]);
+
   React.useEffect(() => {
     table.getColumn('status')?.setFilterValue(status.length > 0 ? status : undefined);
   }, [status, table]);
+
   React.useEffect(() => {
     table.getColumn('category')?.setFilterValue(categoryId.length > 0 ? categoryId : undefined);
   }, [categoryId, table]);
@@ -70,10 +72,22 @@ export function DataTableToolbar<TData>({
           className="h-8 w-[150px] lg:w-[250px]"
         />
         {table.getColumn('status') && (
-          <DataTableFacetedFilter column={table.getColumn('status')} title="Status" options={statuses} />
+          <DataTableFacetedFilter
+            column={table.getColumn('status')}
+            title="Status"
+            options={statuses}
+            value={status}
+            onChange={setStatus}
+          />
         )}
         {table.getColumn('category') && (
-          <DataTableFacetedFilter column={table.getColumn('category')} title="Category" options={categoryOptions} />
+          <DataTableFacetedFilter
+            column={table.getColumn('category')}
+            title="Category"
+            options={categoryOptions}
+            value={categoryId}
+            onChange={setCategoryId}
+          />
         )}
         {isFiltered && (
           <Button
