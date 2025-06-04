@@ -5,7 +5,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { labels, priorities, statuses } from '@/app/app/data-table/data';
+import { labels, sampleData, statuses } from '@/app/app/data-table/data';
 import { Task } from '@/app/app/data-table/schema';
 import { DataTableColumnHeader } from '@/components/ui/data-table-column-header';
 import { DataTableRowActions } from '@/app/app/data-table/data-table-row-actions';
@@ -65,7 +65,6 @@ export const columns: ColumnDef<Task>[] = [
 
       return (
         <div className="flex w-[100px] items-center gap-2">
-          {status.icon && <status.icon className="text-muted-foreground size-4" />}
           <span>{status.label}</span>
         </div>
       );
@@ -75,19 +74,19 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: 'priority',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Priority" />,
+    accessorKey: 'category',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Category" />,
     cell: ({ row }) => {
-      const priority = priorities.find((priority) => priority.value === row.getValue('priority'));
-
-      if (!priority) {
+      const category = sampleData.categories.find((category) => category.id === row.original.category.id);
+      if (!category) {
         return null;
       }
 
       return (
-        <div className="flex items-center gap-2">
-          {priority.icon && <priority.icon className="text-muted-foreground size-4" />}
-          <span>{priority.label}</span>
+        <div className={'flex items-center gap-2'}>
+          <span className="rounded-sm py-1 px-2 text-xs" style={{ backgroundColor: category.color }}>
+            {category.name}
+          </span>
         </div>
       );
     },

@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableViewOptions } from '@/components/ui/data-table-view-options';
-import { statuses, priorities } from '@/app/app/data-table/data';
+import { statuses, sampleData } from '@/app/app/data-table/data';
 import { DataTableFacetedFilter } from '@/components/ui/data-table-faceted-filter';
 
 interface DataTableToolbarProps<TData> {
@@ -15,6 +15,12 @@ interface DataTableToolbarProps<TData> {
 
 export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
+
+  // TODO: Memoize this
+  const categoryOptions = sampleData.categories.map((category) => ({
+    label: category.name,
+    value: category.id,
+  }));
 
   return (
     <div className="flex items-center justify-between">
@@ -28,8 +34,8 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
         {table.getColumn('status') && (
           <DataTableFacetedFilter column={table.getColumn('status')} title="Status" options={statuses} />
         )}
-        {table.getColumn('priority') && (
-          <DataTableFacetedFilter column={table.getColumn('priority')} title="Priority" options={priorities} />
+        {table.getColumn('category') && (
+          <DataTableFacetedFilter column={table.getColumn('category')} title="Category" options={categoryOptions} />
         )}
         {isFiltered && (
           <Button variant="ghost" size="sm" onClick={() => table.resetColumnFilters()}>
