@@ -37,12 +37,7 @@ import { Button } from '@/components/ui/button';
 import { CategoryCreateUpdateModal } from '@/app/app/frame/CategoryCreateUpdateModal';
 import { useSelectedCategory } from '@/hooks/useSelectedCategory';
 import { useCategories } from '@/hooks/useCategories';
-
-type Category = {
-  id: string;
-  name: string;
-  color: string;
-};
+import type { Category } from '@prisma/client';
 
 export function NavCategories() {
   const { isMobile } = useSidebar();

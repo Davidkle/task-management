@@ -1,11 +1,5 @@
 import { useQueryClient, useQuery } from '@tanstack/react-query';
-
-export type Category = {
-  id: string;
-  name: string;
-  color: string;
-  icon?: string;
-};
+import type { Category } from '@prisma/client';
 
 const SELECTED_CATEGORY_KEY = ['selected-category'];
 
