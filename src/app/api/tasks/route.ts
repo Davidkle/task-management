@@ -7,10 +7,12 @@ import { PaginatedResponse, TaskWithCategory } from '@/lib/types';
 const DEFAULT_POSITION = 1_000;
 
 const TaskCreateSchema = z.object({
-  title: z.string(),
-  description: z.string().optional(),
-  dueDate: z.string().datetime().optional(),
-  status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
+  task: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    dueDate: z.string().datetime().optional(),
+    status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
+  }),
   categoryId: z.string().optional(),
 });
 
@@ -73,7 +75,16 @@ export const POST = withUser(async (req: NextRequest, user: { id: string }) => {
 
     const nextPosition = lastTask?.position ? lastTask.position + 1 : DEFAULT_POSITION;
 
-    const task = await prisma.task.create({ data: { ...parsed.data, userId: user.id, position: nextPosition } });
+    const task = await prisma.task.create({
+      data: { ...parsed.data.task, categoryId: parsed.data.categoryId, userId: user.id, position: nextPosition },
+      include: {
+        category: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
     return NextResponse.json({ success: true, data: task });
   } catch (e) {
     return NextResponse.json(
