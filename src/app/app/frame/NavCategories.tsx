@@ -13,7 +13,7 @@ import {
   type DragEndEvent,
   PointerSensor,
 } from '@dnd-kit/core';
-import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 import {
@@ -35,7 +35,6 @@ import {
 } from 'components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { CategoryCreateUpdateModal } from '@/app/app/frame/CategoryCreateUpdateModal';
-import { useSelectedCategory } from '@/hooks/useSelectedCategory';
 import { useCategories } from '@/hooks/useCategories';
 import type { Category } from '@prisma/client';
 import { reorderWithPosition } from '@/lib/ordering';
@@ -45,8 +44,6 @@ export function NavCategories() {
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [showCreateModal, setShowCreateModal] = React.useState(false);
   const [editingCategory, setEditingCategory] = React.useState<Category | null>(null);
-  const { setSelectedCategory } = useSelectedCategory();
-
   const {
     categories: categoriesFromServer,
     createCategoryAsync,
@@ -93,7 +90,6 @@ export function NavCategories() {
   async function handleDeleteCategory(categoryId: string) {
     await deleteCategoryAsync(categoryId);
     setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
-    setSelectedCategory(null);
   }
 
   // Draggable menu item
@@ -107,16 +103,7 @@ export function NavCategories() {
       position: 'relative',
     } as React.CSSProperties;
     return (
-      <SidebarMenuItem
-        ref={setNodeRef}
-        style={style}
-        onClick={() => {
-          setSelectedCategory(category);
-        }}
-        key={category.id}
-        {...attributes}
-        {...listeners}
-      >
+      <SidebarMenuItem ref={setNodeRef} style={style} key={category.id} {...attributes} {...listeners}>
         <SidebarMenuButton asChild>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-sm" style={{ backgroundColor: category.color }}></div>
@@ -174,17 +161,6 @@ export function NavCategories() {
           </Button>
         </div>
       </SidebarGroupLabel>
-      {/* View All item (not draggable) */}
-      <SidebarMenu>
-        <SidebarMenuItem onClick={() => setSelectedCategory(null)} className="font-normal" key="view-all">
-          <SidebarMenuButton asChild>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-sm border"></div>
-              <span>View All</span>
-            </div>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
       <DndContext
         id="dnd-category-menu"
         collisionDetection={closestCenter}
