@@ -29,7 +29,6 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Task } from '@/app/app/data-table/schema';
 import { TaskWithCategory } from '@/lib/types';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -55,7 +54,7 @@ export function DataTable() {
     if (tasks) {
       setTableData(tasks);
     }
-  }, []);
+  }, [tasks]);
 
   const table = useReactTable({
     data: tableData,

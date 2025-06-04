@@ -33,7 +33,7 @@ export const columns: ColumnDef<TaskWithCategory>[] = [
   {
     accessorKey: 'id',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Task" />,
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue('id')}</div>,
+    cell: ({ row }) => <div className="w-[80px]">{String(row.getValue('id')).slice(0, 7)}</div>,
     enableSorting: false,
     enableHiding: false,
   },
