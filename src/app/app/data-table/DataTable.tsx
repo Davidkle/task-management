@@ -21,31 +21,34 @@ import {
   DndContext,
   closestCenter,
   KeyboardSensor,
-  MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
+  PointerSensor,
 } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Task } from '@/app/app/data-table/schema';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { DataTablePagination } from '@/components/ui/DataTablePagination';
 import { DataTableToolbar } from '@/app/app/data-table/DataTableToolbar';
+import { useSelectedTask } from '@/hooks/useSelectedTask';
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends Task, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData extends { id: string }, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData extends Task, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [tableData, setTableData] = React.useState<TData[]>(data);
+  const { setSelectedTask } = useSelectedTask();
 
   React.useEffect(() => {
     setTableData(data);
@@ -92,8 +95,16 @@ export function DataTable<TData extends { id: string }, TValue>({ columns, data 
       });
     }
   }
-
-  const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor), useSensor(KeyboardSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      // Delay the activation to detect on click vs drag
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor)
+  );
 
   // Draggable row
   const DraggableRow = ({ row }: { row: Row<TData> }) => {
@@ -113,6 +124,9 @@ export function DataTable<TData extends { id: string }, TValue>({ columns, data 
         style={style}
         key={row.id}
         data-state={row.getIsSelected() && 'selected'}
+        onClick={() => {
+          setSelectedTask(row.original);
+        }}
         {...attributes}
         {...listeners}
       >
