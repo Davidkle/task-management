@@ -81,7 +81,8 @@ export function ProfileSwitcher() {
                   onClick={async (e) => {
                     e.stopPropagation();
                     if (profile.sessionToken) {
-                      await authClient.revokeSession({ token: profile.sessionToken });
+                      await authClient.multiSession.revoke({ sessionToken: profile.sessionToken });
+                      window.location.reload();
                     }
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
