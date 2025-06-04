@@ -128,7 +128,13 @@ export function DataTable<TData extends { id: string }, TValue>({ columns, data 
     <div className="flex flex-col gap-4 w-full h-[calc(100vh-80px)]">
       <DataTableToolbar table={table} />
       <div className="rounded-md flex flex-col flex-1 border overflow-hidden">
-        <DndContext collisionDetection={closestCenter} modifiers={[]} onDragEnd={handleDragEnd} sensors={sensors}>
+        <DndContext
+          id="dnd-task-table"
+          collisionDetection={closestCenter}
+          modifiers={[]}
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
+        >
           <Table className="relative">
             <TableHeader className="sticky top-0 bg-background z-10">
               {table.getHeaderGroups().map((headerGroup) => (

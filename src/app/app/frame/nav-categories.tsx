@@ -118,7 +118,13 @@ export function NavProjects({ categories: initialCategories }: { categories: Cat
           </Button>
         </div>
       </SidebarGroupLabel>
-      <DndContext collisionDetection={closestCenter} modifiers={[]} onDragEnd={handleDragEnd} sensors={sensors}>
+      <DndContext
+        id="dnd-category-menu"
+        collisionDetection={closestCenter}
+        modifiers={[]}
+        onDragEnd={handleDragEnd}
+        sensors={sensors}
+      >
         <SortableContext items={categories.map((c) => c.id)} strategy={verticalListSortingStrategy}>
           <SidebarMenu>
             {categories.map((category) => (
