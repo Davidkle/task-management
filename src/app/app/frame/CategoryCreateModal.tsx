@@ -25,13 +25,13 @@ const COLOR_OPTIONS = [
   '#6ee7b7', // emerald-300
 ];
 
-interface CategoryCreateModalProps {
+type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: { name: string; color: string }) => void;
-}
+};
 
-export function CategoryCreateModal({ open, onOpenChange, onSubmit }: CategoryCreateModalProps) {
+export function CategoryCreateModal({ open, onOpenChange, onSubmit }: Props) {
   const [name, setName] = React.useState('');
   const [color, setColor] = React.useState<string | undefined>();
   const [touched, setTouched] = React.useState(false);

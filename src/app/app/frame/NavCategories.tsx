@@ -1,6 +1,6 @@
 'use client';
 
-import { Folder, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
+import { Folder, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import React from 'react';
 
 import {
@@ -50,7 +50,12 @@ export function NavCategories() {
   const [showCreateModal, setShowCreateModal] = React.useState(false);
   const { setSelectedCategory } = useSelectedCategory();
 
-  const { categories: categoriesFromServer } = useCategories();
+  const {
+    categories: categoriesFromServer,
+    createCategoryAsync,
+    updateCategoryAsync,
+    deleteCategoryAsync,
+  } = useCategories();
 
   React.useEffect(() => {
     if (categoriesFromServer) {
@@ -77,9 +82,15 @@ export function NavCategories() {
     }
   }
 
-  function handleCreateCategory(data: { name: string; color: string }) {
-    // TODO: Replace with API call
-    setCategories((prev) => [...prev, { id: Math.random().toString(36).slice(2), ...data }]);
+  async function handleCreateCategory(data: { name: string; color: string }) {
+    await createCategoryAsync(data);
+    setShowCreateModal(false);
+  }
+
+  async function handleDeleteCategory(categoryId: string) {
+    await deleteCategoryAsync(categoryId);
+    setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
+    setSelectedCategory(null);
   }
 
   // Draggable menu item
@@ -127,6 +138,15 @@ export function NavCategories() {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
+              <Pencil className="text-muted-foreground" />
+              <span>Edit Category</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteCategory(category.id);
+              }}
+            >
               <Trash2 className="text-muted-foreground" />
               <span>Delete Category</span>
             </DropdownMenuItem>

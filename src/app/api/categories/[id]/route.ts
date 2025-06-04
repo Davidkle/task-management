@@ -38,7 +38,8 @@ export const PUT = withUser(async (req: NextRequest, user: { id: string }, { par
 
 export const DELETE = withUser(async (req: NextRequest, user: { id: string }, { params }: Params) => {
   try {
-    await prisma.category.delete({ where: { id: params.id, userId: user.id } });
+    const paramsData = await params;
+    await prisma.category.delete({ where: { id: paramsData.id, userId: user.id } });
     return NextResponse.json({ success: true, data: {} });
   } catch (e) {
     return NextResponse.json(
