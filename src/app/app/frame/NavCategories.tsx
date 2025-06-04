@@ -122,11 +122,6 @@ export function NavCategories() {
             side={isMobile ? 'bottom' : 'right'}
             align={isMobile ? 'end' : 'start'}
           >
-            <DropdownMenuItem>
-              <Folder className="text-muted-foreground" />
-              <span>View Tasks</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={(e) => {
                 e.stopPropagation();
