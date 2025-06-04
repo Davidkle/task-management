@@ -8,18 +8,26 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-interface DataTableRowActionsProps<TaskWithCategory> {
+import { useTasks } from '@/hooks/useTasks';
+import { TaskWithCategory } from '@/lib/types';
+import { useSelectedTask } from '@/hooks/useSelectedTask';
+
+type Props = {
   row: Row<TaskWithCategory>;
-}
+};
 
-export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions({ row }: Props) {
   const task = row.original;
+  const { deleteTask } = useTasks();
+  const { setSelectedTask } = useSelectedTask();
 
-  // TODO: call api to delete
+  const handleDelete = async (id: string) => {
+    await deleteTask(id);
+    setSelectedTask(null);
+  };
 
   return (
     <DropdownMenu>
@@ -30,9 +38,8 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem variant="destructive">
+        <DropdownMenuItem variant="destructive" onClick={() => handleDelete(task.id)}>
           Delete
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
