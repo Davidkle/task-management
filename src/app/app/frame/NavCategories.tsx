@@ -33,6 +33,7 @@ import {
   useSidebar,
 } from 'components/ui/sidebar';
 import { Button } from '@/components/ui/button';
+import { CategoryCreateModal } from './CategoryCreateModal';
 
 type Category = {
   id: string;
@@ -43,6 +44,7 @@ type Category = {
 export function NavCategories({ categories: initialCategories }: { categories: Category[] }) {
   const { isMobile } = useSidebar();
   const [categories, setCategories] = React.useState(initialCategories);
+  const [showCreateModal, setShowCreateModal] = React.useState(false);
 
   React.useEffect(() => {
     setCategories(initialCategories);
@@ -59,6 +61,11 @@ export function NavCategories({ categories: initialCategories }: { categories: C
         return arrayMove(prev, oldIndex, newIndex);
       });
     }
+  }
+
+  function handleCreateCategory(data: { name: string; color: string }) {
+    // TODO: Replace with API call
+    setCategories((prev) => [...prev, { id: Math.random().toString(36).slice(2), ...data }]);
   }
 
   // Draggable menu item
@@ -113,7 +120,7 @@ export function NavCategories({ categories: initialCategories }: { categories: C
       <SidebarGroupLabel className="mb-4">
         <div className="w-full flex items-center justify-between">
           <div>Categories</div>
-          <Button variant="default" className="w-12 h-7" size="icon">
+          <Button variant="default" className="w-12 h-7" size="icon" onClick={() => setShowCreateModal(true)}>
             <Plus />
           </Button>
         </div>
@@ -133,6 +140,7 @@ export function NavCategories({ categories: initialCategories }: { categories: C
           </SidebarMenu>
         </SortableContext>
       </DndContext>
+      <CategoryCreateModal open={showCreateModal} onOpenChange={setShowCreateModal} onSubmit={handleCreateCategory} />
     </SidebarGroup>
   );
 }
