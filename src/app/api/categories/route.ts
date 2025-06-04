@@ -9,6 +9,8 @@ const CategoryCreateSchema = z.object({
   icon: z.string().optional(),
 });
 
+const DEFAULT_POSITION = 1_000;
+
 export const GET = withUser(async (req: NextRequest, user: { id: string }) => {
   // TODO: Need to add pagination
   const categories = await prisma.category.findMany({ where: { userId: user.id } });
@@ -25,7 +27,17 @@ export const POST = withUser(async (req: NextRequest, user: { id: string }) => {
         { status: 400 }
       );
     }
-    const category = await prisma.category.create({ data: { ...parsed.data, userId: user.id } });
+
+    const lastCategory = await prisma.category.findFirst({
+      where: { userId: user.id },
+      orderBy: { position: 'desc' },
+    });
+
+    const nextPosition = lastCategory?.position ? lastCategory.position + 1 : DEFAULT_POSITION;
+
+    const category = await prisma.category.create({
+      data: { ...parsed.data, userId: user.id, position: nextPosition },
+    });
     return NextResponse.json({ success: true, data: category });
   } catch (e) {
     return NextResponse.json(

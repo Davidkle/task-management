@@ -3,7 +3,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { withUser } from '@/lib/withUser';
 
-const DEFAULT_POSITION = 1_000_000;
+const DEFAULT_POSITION = 1_000;
 
 const TaskCreateSchema = z.object({
   title: z.string(),
@@ -31,7 +31,15 @@ export const POST = withUser(async (req: NextRequest, user: { id: string }) => {
         { status: 400 }
       );
     }
-    const task = await prisma.task.create({ data: { ...parsed.data, userId: user.id, position: DEFAULT_POSITION } });
+
+    const lastTask = await prisma.task.findFirst({
+      where: { userId: user.id },
+      orderBy: { position: 'desc' },
+    });
+
+    const nextPosition = lastTask?.position ? lastTask.position + 1 : DEFAULT_POSITION;
+
+    const task = await prisma.task.create({ data: { ...parsed.data, userId: user.id, position: nextPosition } });
     return NextResponse.json({ success: true, data: task });
   } catch (e) {
     return NextResponse.json(
