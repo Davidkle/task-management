@@ -20,8 +20,9 @@ const TaskCreateSchema = z.object({
 export const GET = withUser(async (req: NextRequest, user: { id: string }) => {
   // Parse query params for pagination, search, and filters
   const { searchParams } = new URL(req.url);
-  const page = parseInt(searchParams.get('page') || '1', 25);
-  const limit = parseInt(searchParams.get('limit') || '25', 25);
+  const page = parseInt(searchParams.get('page') || '1');
+  const limit = parseInt(searchParams.get('limit') || '25');
+
   const skip = (page - 1) * limit;
 
   // New: search and filter params
