@@ -30,7 +30,7 @@ const data = {
     {
       id: '1',
       name: 'Playground',
-      color: '#3B82F6',
+      color: '#ebaf16',
     },
     {
       id: '2',
@@ -40,12 +40,12 @@ const data = {
     {
       id: '3',
       name: 'Documentation',
-      color: '#3B82F6',
+      color: '#8311f5',
     },
     {
       id: '4',
       name: 'Settings',
-      color: '#3B82F6',
+      color: '#f6673b',
     },
   ],
 };

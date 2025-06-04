@@ -1,6 +1,7 @@
 'use client';
 
-import { Folder, Forward, MoreHorizontal, Plus, Trash2, type LucideIcon } from 'lucide-react';
+import { Folder, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 
 import {
   DropdownMenu,
@@ -45,9 +46,12 @@ export function NavProjects({
         {categories.map((category) => (
           <SidebarMenuItem key={category.name}>
             <SidebarMenuButton asChild>
-              <a href={`/app/categories/${category.id}`}>
-                <span>{category.name}</span>
-              </a>
+              <Link href={`/app/categories/${category.id}`}>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-sm" style={{ backgroundColor: category.color }}></div>
+                  <span>{category.name}</span>
+                </div>
+              </Link>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
