@@ -6,7 +6,6 @@ import { withUser } from '@/lib/withUser';
 const CategoryCreateSchema = z.object({
   name: z.string(),
   color: z.string(),
-  icon: z.string().optional(),
 });
 
 const DEFAULT_POSITION = 1_000;

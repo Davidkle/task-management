@@ -17,6 +17,7 @@ type Params = {
 
 export const PUT = withUser(async (req: NextRequest, user: { id: string }, { params }: Params) => {
   try {
+    const paramsData = await params;
     const body = await req.json();
     const parsed = CategoryUpdateSchema.safeParse(body);
     if (!parsed.success) {
@@ -25,7 +26,7 @@ export const PUT = withUser(async (req: NextRequest, user: { id: string }, { par
         { status: 400 }
       );
     }
-    const category = await prisma.category.update({ where: { id: params.id, userId: user.id }, data: parsed.data });
+    const category = await prisma.category.update({ where: { id: paramsData.id, userId: user.id }, data: parsed.data });
     return NextResponse.json({ success: true, data: category });
   } catch (e) {
     return NextResponse.json(
