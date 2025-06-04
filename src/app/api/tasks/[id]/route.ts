@@ -6,7 +6,7 @@ import prisma from '@/lib/prisma';
 const TaskUpdateSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
-  dueDate: z.string().datetime().optional(),
+  dueDate: z.string().optional(),
   status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
   categoryId: z.string().optional(),
   position: z.number().optional(),

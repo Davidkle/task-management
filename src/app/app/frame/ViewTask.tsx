@@ -99,7 +99,7 @@ export function ViewTask() {
         input: {
           title,
           description,
-          dueDate: dueDate ? new Date(dueDate) : null,
+          dueDate: dueDate ? new Date(dueDate) : undefined,
           status: status as TaskStatus,
           categoryId: categoryId || undefined,
         },
