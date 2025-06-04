@@ -38,6 +38,7 @@ import { CategoryCreateUpdateModal } from '@/app/app/frame/CategoryCreateUpdateM
 import { useSelectedCategory } from '@/hooks/useSelectedCategory';
 import { useCategories } from '@/hooks/useCategories';
 import type { Category } from '@prisma/client';
+import { reorderWithPosition } from '@/lib/ordering';
 
 export function NavCategories() {
   const { isMobile } = useSidebar();
@@ -70,11 +71,12 @@ export function NavCategories() {
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (active && over && active.id !== over.id) {
-      setCategories((prev) => {
-        const oldIndex = prev.findIndex((cat) => cat.id === active.id);
-        const newIndex = prev.findIndex((cat) => cat.id === over.id);
-        return arrayMove(prev, oldIndex, newIndex);
-      });
+      setCategories((prev) =>
+        reorderWithPosition(prev, active.id as string, over.id as string, (id, newPosition) => {
+          // Fire and forget
+          updateCategoryAsync({ id, input: { position: newPosition } });
+        })
+      );
     }
   }
 

@@ -39,8 +39,7 @@ import { useSelectedTask } from '@/hooks/useSelectedTask';
 
 import { columns } from '@/app/app/data-table/columns';
 import { useTasks } from '@/hooks/useTasks';
-
-const DEFAULT_SPACING = 1_000;
+import { reorderWithPosition } from '@/lib/ordering';
 
 export function DataTable() {
   const [rowSelection, setRowSelection] = React.useState({});
@@ -92,40 +91,12 @@ export function DataTable() {
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (active && over && active.id !== over.id) {
-      setTableData((prev) => {
-        const oldIndex = dataIds.indexOf(active.id as string);
-        const newIndex = dataIds.indexOf(over.id as string);
-        const newData = arrayMove(prev, oldIndex, newIndex);
-
-        // Update position
-        const updated = [...newData];
-        const moved = updated[newIndex];
-
-        // Find neighbors
-        const after = updated[newIndex + 1];
-        const before = updated[newIndex - 1];
-
-        let newPosition = moved.position;
-        if (before && after) {
-          newPosition = (before.position + after.position) / 2;
-        } else if (!before && after) {
-          const next = after;
-          const nextNext = updated[newIndex + 2]; // look forward 2 positions
-          const diff = nextNext ? Math.abs(next.position - nextNext.position) : DEFAULT_SPACING;
-          newPosition = next.position + diff;
-        } else if (before && !after) {
-          const prev = before;
-          const prevPrev = updated[newIndex - 2]; // look back 2 positions
-          const diff = prevPrev ? Math.abs(prev.position - prevPrev.position) : DEFAULT_SPACING;
-          newPosition = prev.position - diff;
-        }
-        moved.position = newPosition;
-
-        // Send update to server. Fire and forget
-        updateTaskAsync({ id: moved.id, input: { position: newPosition } });
-
-        return updated;
-      });
+      setTableData((prev) =>
+        reorderWithPosition(prev, active.id as string, over.id as string, (id, newPosition) => {
+          // Fire and forget
+          updateTaskAsync({ id, input: { position: newPosition } });
+        })
+      );
     }
   }
   const sensors = useSensors(

@@ -7,6 +7,7 @@ const CategoryUpdateSchema = z.object({
   name: z.string().optional(),
   color: z.string().optional(),
   icon: z.string().optional(),
+  position: z.number().optional(),
 });
 
 type Params = {
@@ -26,6 +27,7 @@ export const PUT = withUser(async (req: NextRequest, user: { id: string }, { par
         { status: 400 }
       );
     }
+
     const category = await prisma.category.update({ where: { id: paramsData.id, userId: user.id }, data: parsed.data });
     return NextResponse.json({ success: true, data: category });
   } catch (e) {
