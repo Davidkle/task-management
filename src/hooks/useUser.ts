@@ -18,15 +18,6 @@ const fetchUserProfiles = async (): Promise<UserProfile[]> => {
   return data.profiles;
 };
 
-// Set active profile
-const setActiveProfile = async (userId: string): Promise<void> => {
-  const res = await fetch(`/api/user/setActiveProfile/${userId}`, {
-    method: 'POST',
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data?.error || 'Failed to set active profile');
-};
-
 export function useUserProfiles() {
   const queryClient = useQueryClient();
 
@@ -35,21 +26,10 @@ export function useUserProfiles() {
     queryKey: ['userProfiles'],
     queryFn: fetchUserProfiles,
   });
-
-  // Set active profile mutation
-  const setActiveProfileMutation = useMutation({
-    mutationFn: setActiveProfile,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['userProfiles'] }),
-  });
-
   return {
     // List
     profiles: profilesQuery.data,
     isLoading: profilesQuery.isLoading,
     error: profilesQuery.error,
-
-    // Set active
-    setActiveProfileAsync: setActiveProfileMutation.mutateAsync,
-    isSettingActive: setActiveProfileMutation.status === 'pending',
   };
 }
