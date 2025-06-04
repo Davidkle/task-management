@@ -11,10 +11,23 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  Row,
   SortingState,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
@@ -26,14 +39,19 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData extends { id: string }, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [tableData, setTableData] = React.useState<TData[]>(data);
+
+  React.useEffect(() => {
+    setTableData(data);
+  }, [data]);
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     state: {
       sorting,
@@ -57,7 +75,52 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    getRowId: (row) => row.id,
   });
+
+  // Convenient for ID lookup
+  const dataIds = React.useMemo(() => tableData.map((row) => row.id), [tableData]);
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (active && over && active.id !== over.id) {
+      setTableData((prev) => {
+        const oldIndex = dataIds.indexOf(active.id as string);
+        const newIndex = dataIds.indexOf(over.id as string);
+        return arrayMove(prev, oldIndex, newIndex);
+      });
+    }
+  }
+
+  const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor), useSensor(KeyboardSensor));
+
+  // Draggable row
+  const DraggableRow = ({ row }: { row: Row<TData> }) => {
+    const { transform, transition, setNodeRef, isDragging, attributes, listeners } = useSortable({ id: row.id });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.8 : 1,
+      zIndex: isDragging ? 1 : 0,
+      position: 'relative',
+    } as React.CSSProperties;
+
+    return (
+      <TableRow
+        ref={setNodeRef}
+        style={style}
+        key={row.id}
+        data-state={row.getIsSelected() && 'selected'}
+        {...attributes}
+        {...listeners}
+      >
+        {row.getVisibleCells().map((cell: any) => (
+          <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+        ))}
+      </TableRow>
+    );
+  };
 
   // 64px is the height of the header
   // 16px is the bottom padding of the page
@@ -65,38 +128,34 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     <div className="flex flex-col gap-4 w-full h-[calc(100vh-80px)]">
       <DataTableToolbar table={table} />
       <div className="rounded-md flex flex-col flex-1 border overflow-hidden">
-        <Table className="relative">
-          <TableHeader className="sticky top-0 bg-background z-10">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
+        <DndContext collisionDetection={closestCenter} modifiers={[]} onDragEnd={handleDragEnd} sensors={sensors}>
+          <Table className="relative">
+            <TableHeader className="sticky top-0 bg-background z-10">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
                     <TableHead key={header.id} colSpan={header.colSpan}>
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => <DraggableRow key={row.id} row={row} />)
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </SortableContext>
+            </TableBody>
+          </Table>
+        </DndContext>
       </div>
       <DataTablePagination table={table} />
     </div>
