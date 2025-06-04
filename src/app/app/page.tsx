@@ -1,12 +1,5 @@
-import { AppSidebar } from '@/app/app/frame/app-sidebar';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from 'components/ui/breadcrumb';
+import { AppSidebar } from '@/app/app/frame/AppSidebar';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from 'components/ui/breadcrumb';
 import { Separator } from 'components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from 'components/ui/sidebar';
 
@@ -14,7 +7,7 @@ import { Metadata } from 'next';
 import { z } from 'zod';
 
 import { columns } from '@/app/app/data-table/columns';
-import { DataTable } from '@/app/app/data-table/data-table';
+import { DataTable } from '@/app/app/data-table/DataTable';
 import { taskSchema } from '@/app/app/data-table/schema';
 import exampleTasks from '@/app/app/data-table/tasks.json';
 

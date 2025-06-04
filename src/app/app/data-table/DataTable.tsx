@@ -32,8 +32,8 @@ import { CSS } from '@dnd-kit/utilities';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-import { DataTablePagination } from '@/components/ui/data-table-pagination';
-import { DataTableToolbar } from '@/app/app/data-table/data-table-toolbar';
+import { DataTablePagination } from '@/components/ui/DataTablePagination';
+import { DataTableToolbar } from '@/app/app/data-table/DataTableToolbar';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

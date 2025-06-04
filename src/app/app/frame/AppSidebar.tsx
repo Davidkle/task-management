@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 
-import { NavProjects } from '@/app/app/frame/nav-categories';
-import { ProfileSwitcher } from '@/app/app/frame/profile-switcher';
+import { NavCategories } from '@/app/app/frame/NavCategories';
+import { ProfileSwitcher } from '@/app/app/frame/ProfileSwitcher';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from 'components/ui/sidebar';
 import { sampleData } from '@/app/app/data-table/data';
 
@@ -16,7 +16,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <ProfileSwitcher profiles={sampleData.profiles} />
       </SidebarHeader>
       <SidebarContent>
-        <NavProjects categories={sampleData.categories} />
+        <NavCategories categories={sampleData.categories} />
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

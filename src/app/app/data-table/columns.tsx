@@ -6,8 +6,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 import { sampleData, statuses } from '@/app/app/data-table/data';
 import { Task } from '@/app/app/data-table/schema';
-import { DataTableColumnHeader } from '@/components/ui/data-table-column-header';
-import { DataTableRowActions } from '@/app/app/data-table/data-table-row-actions';
+import { DataTableColumnHeader } from '@/components/ui/DataTableColumnHeader';
+import { DataTableRowActions } from '@/app/app/data-table/DataTableRowActions';
 
 export const columns: ColumnDef<Task>[] = [
   {

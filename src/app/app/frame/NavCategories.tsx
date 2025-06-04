@@ -40,7 +40,7 @@ type Category = {
   color: string;
 };
 
-export function NavProjects({ categories: initialCategories }: { categories: Category[] }) {
+export function NavCategories({ categories: initialCategories }: { categories: Category[] }) {
   const { isMobile } = useSidebar();
   const [categories, setCategories] = React.useState(initialCategories);
 

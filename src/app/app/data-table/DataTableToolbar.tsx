@@ -5,9 +5,8 @@ import { X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DataTableViewOptions } from '@/components/ui/data-table-view-options';
 import { statuses, sampleData } from '@/app/app/data-table/data';
-import { DataTableFacetedFilter } from '@/components/ui/data-table-faceted-filter';
+import { DataTableFacetedFilter } from '@/components/ui/DataTableFacetedFilter';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -45,7 +44,6 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
         )}
       </div>
       <div className="flex items-center gap-2">
-        <DataTableViewOptions table={table} />
         <Button size="sm">Add Task</Button>
       </div>
     </div>
