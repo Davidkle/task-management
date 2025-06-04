@@ -5,7 +5,7 @@ import { auth } from '@/lib/auth';
 // GET: Return all user profiles for active sessions, with an 'active' boolean
 export async function GET(request: NextRequest) {
   // Get all sessions for the current user
-  const sessions = await auth.api.listSessions({ headers: request.headers });
+  const sessions = await auth.api.listDeviceSessions({ headers: request.headers });
   if (!sessions || !Array.isArray(sessions)) {
     return NextResponse.json({ error: 'No sessions found' }, { status: 401 });
   }
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   const activeToken = currentSession?.session?.token;
 
   // Get user IDs from sessions
-  const userIds = sessions.map((s) => s.userId);
+  const userIds = sessions.map((s) => s.user.id);
 
   // Fetch users from DB
   const users = await prisma.user.findMany({
@@ -27,14 +27,15 @@ export async function GET(request: NextRequest) {
   // Map users to sessions, add 'active' boolean
   const profiles = users.map((user) => {
     // Find all sessions for this user
-    const userSessions = sessions.filter((s) => s.userId === user.id);
+    const userSessions = sessions.filter((s) => s.user.id === user.id);
     // Is any session for this user the active one?
-    const isActive = userSessions.some((s) => s.token === activeToken);
+    const isActive = userSessions.some((s) => s.session.token === activeToken);
     // Optionally, include all session tokens for this user
+
     return {
       ...user,
       active: isActive,
-      sessionToken: userSessions.find((s) => s.token === activeToken)?.token,
+      sessionToken: userSessions.find((s) => s.session.token === activeToken)?.session.token,
     };
   });
 
