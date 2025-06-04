@@ -9,6 +9,7 @@ const TaskUpdateSchema = z.object({
   dueDate: z.string().datetime().optional(),
   status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
   categoryId: z.string().optional(),
+  position: z.number().optional(),
 });
 
 type Params = {
@@ -29,7 +30,9 @@ export const GET = withUser(async (req: NextRequest, user: { id: string }, { par
 
 export const PUT = withUser(async (req: NextRequest, user: { id: string }, { params }: Params) => {
   try {
+    const paramsData = await params;
     const body = await req.json();
+
     const parsed = TaskUpdateSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -37,7 +40,8 @@ export const PUT = withUser(async (req: NextRequest, user: { id: string }, { par
         { status: 400 }
       );
     }
-    const task = await prisma.task.update({ where: { id: params.id, userId: user.id }, data: parsed.data });
+
+    const task = await prisma.task.update({ where: { id: paramsData.id, userId: user.id }, data: parsed.data });
     return NextResponse.json({ success: true, data: task });
   } catch (e) {
     return NextResponse.json(
