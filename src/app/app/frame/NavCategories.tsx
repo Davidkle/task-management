@@ -1,17 +1,16 @@
 'use client';
 
 import { Folder, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
-import Link from 'next/link';
 import React from 'react';
 import {
   DndContext,
   closestCenter,
   KeyboardSensor,
-  MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
+  PointerSensor,
 } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -33,7 +32,8 @@ import {
   useSidebar,
 } from 'components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { CategoryCreateModal } from './CategoryCreateModal';
+import { CategoryCreateModal } from '@/app/app/frame/CategoryCreateModal';
+import { useSelectedCategory } from '@/hooks/useSelectedCategory';
 
 type Category = {
   id: string;
@@ -45,12 +45,19 @@ export function NavCategories({ categories: initialCategories }: { categories: C
   const { isMobile } = useSidebar();
   const [categories, setCategories] = React.useState(initialCategories);
   const [showCreateModal, setShowCreateModal] = React.useState(false);
+  const { setSelectedCategory } = useSelectedCategory();
 
   React.useEffect(() => {
     setCategories(initialCategories);
   }, [initialCategories]);
 
-  const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor), useSensor(KeyboardSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 },
+    }),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor)
+  );
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -79,14 +86,21 @@ export function NavCategories({ categories: initialCategories }: { categories: C
       position: 'relative',
     } as React.CSSProperties;
     return (
-      <SidebarMenuItem ref={setNodeRef} style={style} key={category.id} {...attributes} {...listeners}>
+      <SidebarMenuItem
+        ref={setNodeRef}
+        style={style}
+        onClick={() => {
+          setSelectedCategory(category);
+        }}
+        key={category.id}
+        {...attributes}
+        {...listeners}
+      >
         <SidebarMenuButton asChild>
-          <Link href={`/app/categories/${category.id}`}>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-sm" style={{ backgroundColor: category.color }}></div>
-              <span>{category.name}</span>
-            </div>
-          </Link>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-sm" style={{ backgroundColor: category.color }}></div>
+            <span>{category.name}</span>
+          </div>
         </SidebarMenuButton>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -125,6 +139,17 @@ export function NavCategories({ categories: initialCategories }: { categories: C
           </Button>
         </div>
       </SidebarGroupLabel>
+      {/* View All item (not draggable) */}
+      <SidebarMenu>
+        <SidebarMenuItem onClick={() => setSelectedCategory(null)} className="font-normal" key="view-all">
+          <SidebarMenuButton asChild>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-sm border"></div>
+              <span>View All</span>
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
       <DndContext
         id="dnd-category-menu"
         collisionDetection={closestCenter}
