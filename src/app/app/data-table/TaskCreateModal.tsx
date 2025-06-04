@@ -3,6 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { useTasks } from '@/hooks/useTasks';
+import { useCategories } from '@/hooks/useCategories';
+import { toast } from 'sonner';
 
 interface TaskCreateModalProps {
   open: boolean;
@@ -12,17 +15,25 @@ interface TaskCreateModalProps {
 export function TaskCreateModal({ open, onOpenChange }: TaskCreateModalProps) {
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
-  const [categoryId, setCategoryId] = React.useState('');
+  const [categoryId, setCategoryId] = React.useState<string | undefined>();
 
-  // TODO: Fetch categories from API
-  const categories = [
-    { id: '1', name: 'Work' },
-    { id: '2', name: 'Personal' },
-  ];
+  const { createTaskAsync, isCreating } = useTasks();
+  const { categories } = useCategories();
 
-  const handleSubmit = () => {
-    //  TODO
-    console.log('submit');
+  // Validation: title and description must be non-empty
+  const isFormValid = title.trim().length > 0 && description.trim().length > 0;
+
+  const handleSubmit = async () => {
+    if (!title.trim() || !description.trim()) return;
+    try {
+      await createTaskAsync({ title, description, categoryId });
+      setTitle('');
+      setDescription('');
+      setCategoryId('');
+      onOpenChange(false);
+    } catch (error) {
+      toast.error('Failed to create task');
+    }
   };
 
   return (
@@ -39,12 +50,12 @@ export function TaskCreateModal({ open, onOpenChange }: TaskCreateModalProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <Select value={categoryId} onValueChange={setCategoryId}>
+          <Select value={categoryId} onValueChange={setCategoryId} disabled={!categories || categories.length === 0}>
             <SelectTrigger>
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((cat) => (
+              {categories?.map((cat) => (
                 <SelectItem key={cat.id} value={cat.id}>
                   {cat.name}
                 </SelectItem>
@@ -64,6 +75,7 @@ export function TaskCreateModal({ open, onOpenChange }: TaskCreateModalProps) {
             type="submit"
             className="px-4 py-2 rounded bg-primary text-white hover:bg-primary/90"
             onClick={handleSubmit}
+            disabled={!isFormValid || isCreating}
           >
             Submit
           </Button>
