@@ -26,11 +26,15 @@ export async function GET(request: NextRequest) {
 
   // Map users to sessions, add 'active' boolean
   const profiles = users.map((user) => {
-    const session = sessions.find((s) => s.userId === user.id);
+    // Find all sessions for this user
+    const userSessions = sessions.filter((s) => s.userId === user.id);
+    // Is any session for this user the active one?
+    const isActive = userSessions.some((s) => s.token === activeToken);
+    // Optionally, include all session tokens for this user
     return {
       ...user,
-      active: session?.token === activeToken,
-      sessionToken: session?.token,
+      active: isActive,
+      sessionToken: userSessions.find((s) => s.token === activeToken)?.token,
     };
   });
 

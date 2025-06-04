@@ -21,7 +21,7 @@ import { useRouter } from 'next/navigation';
 export function ProfileSwitcher() {
   const { isMobile } = useSidebar();
   const [activeProfile, setActiveProfile] = React.useState<UserProfile | null>(null);
-  const { profiles, setActiveProfileAsync } = useUserProfiles();
+  const { profiles, setActiveProfileAsync, isLoading } = useUserProfiles();
   const router = useRouter();
 
   useEffect(() => {
@@ -30,10 +30,10 @@ export function ProfileSwitcher() {
       setActiveProfile(newActiveProfile);
     }
 
-    if (profiles?.length === 0) {
+    if (!isLoading && !profiles) {
       router.push('/login');
     }
-  }, [profiles]);
+  }, [profiles, isLoading]);
 
   if (!activeProfile) {
     return null;
