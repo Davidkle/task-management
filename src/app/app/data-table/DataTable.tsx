@@ -56,11 +56,13 @@ export function DataTable() {
   const debouncedStatus = useDebounce(status, 300);
   const debouncedCategoryId = useDebounce(categoryId, 300);
 
+  const [pageIndex, setPageIndex] = React.useState(0);
 
-  const { tasks, updateTaskAsync } = useTasks({
+  const { tasks, updateTaskAsync, pagination } = useTasks({
     search: debouncedSearch || undefined,
     status: debouncedStatus.length > 0 ? debouncedStatus.join(',') : undefined,
     categoryId: debouncedCategoryId.length > 0 ? debouncedCategoryId.join(',') : undefined,
+    page: pageIndex + 1,
   });
 
   // Sync tableData with tasks
@@ -77,13 +79,13 @@ export function DataTable() {
       sorting,
       columnVisibility,
       rowSelection,
-    },
-    initialState: {
       pagination: {
+        pageIndex,
         pageSize: 25,
       },
     },
     enableRowSelection: true,
+    manualPagination: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -93,6 +95,12 @@ export function DataTable() {
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getRowId: (row) => row.id,
+    onPaginationChange: (updater) => {
+      if (typeof updater === 'function') {
+        const newState = updater(table.getState().pagination);
+        setPageIndex(newState.pageIndex);
+      }
+    },
   });
 
   // Convenient for ID lookup
@@ -200,7 +208,7 @@ export function DataTable() {
           </Table>
         </DndContext>
       </div>
-      <DataTablePagination table={table} />
+      {pagination && <DataTablePagination table={table} pageInfo={pagination} />}
     </div>
   );
 }

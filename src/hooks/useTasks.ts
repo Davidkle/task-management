@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { TaskWithCategory } from '@/lib/types';
+import { PaginatedResponse, TaskWithCategory } from '@/lib/types';
 import type { Task } from '@prisma/client';
 
 export type TaskUpdateInput = Partial<Task>;
@@ -11,7 +11,7 @@ const fetchTasks = async (params?: {
   categoryId?: string | string[];
   page?: number;
   limit?: number;
-}): Promise<TaskWithCategory[]> => {
+}): Promise<PaginatedResponse<TaskWithCategory>> => {
   const query = new URLSearchParams();
   if (params?.search) query.set('search', params.search);
   if (params?.status) {
@@ -28,13 +28,14 @@ const fetchTasks = async (params?: {
   const res = await fetch(`/api/tasks${query.toString() ? `?${query.toString()}` : ''}`);
   const data = await res.json();
   if (!res.ok) throw new Error(data?.error?.message || 'Failed to fetch tasks');
-  return data.data;
+  return data;
 };
 
 const fetchTask = async (id: string): Promise<TaskWithCategory> => {
   const res = await fetch(`/api/tasks/${id}`);
   const data = await res.json();
   if (!res.ok) throw new Error(data?.error?.message || 'Failed to fetch task');
+
   return data.data;
 };
 
@@ -76,7 +77,7 @@ export function useTasks(filters?: {
   const queryClient = useQueryClient();
 
   // Fetch all tasks with filters
-  const tasksQuery = useQuery<TaskWithCategory[]>({
+  const tasksQuery = useQuery<PaginatedResponse<TaskWithCategory>>({
     queryKey: ['tasks', filters],
     queryFn: () => fetchTasks(filters),
   });
@@ -109,7 +110,8 @@ export function useTasks(filters?: {
 
   return {
     // List
-    tasks: tasksQuery.data,
+    pagination: tasksQuery.data?.pagination,
+    tasks: tasksQuery.data?.data,
     isLoading: tasksQuery.isLoading,
     error: tasksQuery.error,
 
