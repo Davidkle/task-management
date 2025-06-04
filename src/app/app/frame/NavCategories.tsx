@@ -36,6 +36,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { CategoryCreateModal } from '@/app/app/frame/CategoryCreateModal';
 import { useSelectedCategory } from '@/hooks/useSelectedCategory';
+import { useCategories } from '@/hooks/useCategories';
 
 type Category = {
   id: string;
@@ -43,15 +44,19 @@ type Category = {
   color: string;
 };
 
-export function NavCategories({ categories: initialCategories }: { categories: Category[] }) {
+export function NavCategories() {
   const { isMobile } = useSidebar();
-  const [categories, setCategories] = React.useState(initialCategories);
+  const [categories, setCategories] = React.useState<Category[]>([]);
   const [showCreateModal, setShowCreateModal] = React.useState(false);
   const { setSelectedCategory } = useSelectedCategory();
 
+  const { categories: categoriesFromServer } = useCategories();
+
   React.useEffect(() => {
-    setCategories(initialCategories);
-  }, [initialCategories]);
+    if (categoriesFromServer) {
+      setCategories(categoriesFromServer);
+    }
+  }, [categoriesFromServer]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

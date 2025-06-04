@@ -9,14 +9,13 @@ import { sampleData } from '@/app/app/data-table/data';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // TODO: support multi session
-  // TODO: pull categories
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <ProfileSwitcher profiles={sampleData.profiles} />
       </SidebarHeader>
       <SidebarContent>
-        <NavCategories categories={sampleData.categories} />
+        <NavCategories />
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
