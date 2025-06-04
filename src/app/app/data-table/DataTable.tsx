@@ -3,7 +3,6 @@
 import * as React from 'react';
 import {
   ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -42,15 +41,25 @@ import { useTasks } from '@/hooks/useTasks';
 import { reorderWithPosition } from '@/lib/ordering';
 
 export function DataTable() {
+  const [search, setSearch] = React.useState('');
+  const [status, setStatus] = React.useState<string[]>([]);
+  const [categoryId, setCategoryId] = React.useState<string[]>([]);
+
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [tableData, setTableData] = React.useState<TaskWithCategory[]>([]);
 
   const { setSelectedTask } = useSelectedTask();
-  const { tasks, updateTaskAsync } = useTasks();
 
+  // Pass filters to useTasks
+  const { tasks, updateTaskAsync } = useTasks({
+    search: search || undefined,
+    status: status.length > 0 ? status.join(',') : undefined,
+    categoryId: categoryId.length > 0 ? categoryId.join(',') : undefined,
+  });
+
+  // Sync tableData with tasks
   React.useEffect(() => {
     if (tasks) {
       setTableData(tasks);
@@ -64,7 +73,6 @@ export function DataTable() {
       sorting,
       columnVisibility,
       rowSelection,
-      columnFilters,
     },
     initialState: {
       pagination: {
@@ -74,7 +82,6 @@ export function DataTable() {
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -145,7 +152,15 @@ export function DataTable() {
   // 16px is the bottom padding of the page
   return (
     <div className="flex flex-col gap-4 w-full h-[calc(100vh-80px)]">
-      <DataTableToolbar table={table} />
+      <DataTableToolbar
+        table={table}
+        search={search}
+        setSearch={setSearch}
+        status={status}
+        setStatus={setStatus}
+        categoryId={categoryId}
+        setCategoryId={setCategoryId}
+      />
       <div className="rounded-md flex flex-col flex-1 border overflow-hidden">
         <DndContext
           id="dnd-task-table"
