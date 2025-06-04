@@ -119,65 +119,108 @@ export function ViewTask() {
     >
       <SheetContent side="right" overlay={false} className="max-w-md w-full">
         <SheetHeader>
-          <SheetTitle>Task</SheetTitle>
+          <SheetTitle>Task {selectedTask?.id.slice(0, 7)}</SheetTitle>
         </SheetHeader>
         {selectedTask && (
-          <form className="flex flex-col gap-4 mt-4">
-            <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-            <textarea
-              placeholder="Description"
-              className="h-24 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
+          <form className="flex flex-col gap-5 mt-4 px-4 pb-8">
+            <div>
+              <label className="font-normal text-sm mb-1" htmlFor="task-title">
+                Title
+              </label>
+              <Input
+                id="task-title"
+                placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="font-normal text-sm" htmlFor="task-desc">
+                Description
+              </label>
+              <textarea
+                id="task-desc"
+                placeholder="Description"
+                className="h-24 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </div>
             {/* Due Date Picker */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={'outline'}
-                  className={'w-full justify-start text-left font-normal' + (!dueDate ? ' text-muted-foreground' : '')}
+            <div className="flex flex-col gap-1">
+              <label className="font-normal text-sm" htmlFor="task-due-date">
+                Due Date
+              </label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="task-due-date"
+                    variant={'outline'}
+                    className={
+                      'w-full justify-start text-left font-normal' + (!dueDate ? ' text-muted-foreground' : '')
+                    }
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dueDate ? format(new Date(dueDate), 'PPP') : <span>Pick a due date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dueDate ? new Date(dueDate) : undefined}
+                    onSelect={(date) => setDueDate(date ? date.toISOString().slice(0, 10) : undefined)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="font-normal text-sm" htmlFor="task-status">
+                  Status
+                </label>
+                <Select value={status} onValueChange={(value) => setStatus(value as TaskStatus)}>
+                  <SelectTrigger id="task-status">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex-1">
+                <label className="font-normal text-sm" htmlFor="task-category">
+                  Category
+                </label>
+                <Select
+                  value={categoryId}
+                  onValueChange={setCategoryId}
+                  disabled={!categories || categories.length === 0}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dueDate ? format(new Date(dueDate), 'PPP') : <span>Pick a due date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dueDate ? new Date(dueDate) : undefined}
-                  onSelect={(date) => setDueDate(date ? date.toISOString().slice(0, 10) : undefined)}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            <Select value={status} onValueChange={(value) => setStatus(value as TaskStatus)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={categoryId} onValueChange={setCategoryId} disabled={!categories || categories.length === 0}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories?.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  <SelectTrigger id="task-category">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories?.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </form>
         )}
-        <div className="flex justify-end gap-8 mt-8">
+        <div className="flex justify-end gap-8 mt-8 px-4 pb-4 absolute bottom-0 left-0 w-full bg-white">
           <Button
             type="button"
             className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
