@@ -1,6 +1,11 @@
 # TaskFlow
 
-A todo list app
+A todo list app. See below for screenshots.
+
+- [Landing Page](screenshots/landing.png)
+- [Task View](screenshots/task-view.png)
+- [Task List](screenshots/task-list.png)
+- [Login](screenshots/login.png)
 
 ## Run locally
 
@@ -97,3 +102,21 @@ A todo list app
 - WebSockets vs Polling
   - WebSockets for realtime bidirectional communication, efficient for frequent updates
   - Polling: simple implementation, better for infrequent updates and mobile clients
+
+## Screenshots
+
+### Landing Page
+
+[Landing Page Screenshot](screenshots/landing.png)
+
+### Task View
+
+[Task View Screenshot](screenshots/task-view.png)
+
+### Task List
+
+[Task List Screenshot](screenshots/task-list.png)
+
+### Login
+
+[Login Screenshot](screenshots/login.png)
