@@ -39,6 +39,7 @@ import { useSelectedTask } from '@/hooks/useSelectedTask';
 import { columns } from '@/app/app/data-table/columns';
 import { useTasks } from '@/hooks/useTasks';
 import { reorderWithPosition } from '@/lib/ordering';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export function DataTable() {
   const [search, setSearch] = React.useState('');
@@ -52,11 +53,14 @@ export function DataTable() {
 
   const { setSelectedTask } = useSelectedTask();
 
-  // Pass filters to useTasks
+  const debouncedSearch = useDebounce(search, 300);
+  const debouncedStatus = useDebounce(status, 300);
+  const debouncedCategoryId = useDebounce(categoryId, 300);
+
   const { tasks, updateTaskAsync } = useTasks({
-    search: search || undefined,
-    status: status.length > 0 ? status.join(',') : undefined,
-    categoryId: categoryId.length > 0 ? categoryId.join(',') : undefined,
+    search: debouncedSearch || undefined,
+    status: debouncedStatus.length > 0 ? debouncedStatus.join(',') : undefined,
+    categoryId: debouncedCategoryId.length > 0 ? debouncedCategoryId.join(',') : undefined,
   });
 
   // Sync tableData with tasks
