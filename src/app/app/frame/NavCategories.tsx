@@ -2,6 +2,7 @@
 
 import { Folder, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import React from 'react';
+
 import {
   DndContext,
   closestCenter,
@@ -22,6 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from 'components/ui/dropdown-menu';
+
 import {
   SidebarGroup,
   SidebarGroupLabel,

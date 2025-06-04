@@ -30,6 +30,7 @@ import {
 import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Task } from '@/app/app/data-table/schema';
+import { TaskWithCategory } from '@/lib/types';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
@@ -37,12 +38,12 @@ import { DataTablePagination } from '@/components/ui/DataTablePagination';
 import { DataTableToolbar } from '@/app/app/data-table/DataTableToolbar';
 import { useSelectedTask } from '@/hooks/useSelectedTask';
 
-interface DataTableProps<TData extends Task, TValue> {
+interface DataTableProps<TData extends TaskWithCategory, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData extends Task, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData extends TaskWithCategory, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);

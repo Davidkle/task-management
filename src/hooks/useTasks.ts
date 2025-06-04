@@ -1,45 +1,29 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { TaskWithCategory } from '@/lib/types';
+import type { Task } from '@prisma/client';
 
-export type Task = {
-  id: string;
-  title: string;
-  description?: string;
-  dueDate?: string;
-  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  categoryId?: string;
-  position: number;
-  userId: string;
-};
+export type TaskUpdateInput = Partial<Task>;
+export type TaskCreateInput = Partial<Task>;
 
-export type TaskInput = {
-  title: string;
-  description?: string;
-  dueDate?: string;
-  status?: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  categoryId?: string;
-};
-
-export type TaskUpdateInput = Partial<TaskInput>;
-
-const fetchTasks = async (): Promise<Task[]> => {
+const fetchTasks = async (): Promise<TaskWithCategory[]> => {
   const res = await fetch('/api/tasks');
   const data = await res.json();
   if (!res.ok) throw new Error(data?.error?.message || 'Failed to fetch tasks');
   return data.data;
 };
 
-const fetchTask = async (id: string): Promise<Task> => {
+const fetchTask = async (id: string): Promise<TaskWithCategory> => {
   const res = await fetch(`/api/tasks/${id}`);
   const data = await res.json();
   if (!res.ok) throw new Error(data?.error?.message || 'Failed to fetch task');
   return data.data;
 };
 
-const createTask = async (input: TaskInput): Promise<Task> => {
+const createTask = async (input: TaskCreateInput, categoryId?: string): Promise<TaskWithCategory> => {
   const res = await fetch('/api/tasks', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
+    body: JSON.stringify({ task: input, categoryId }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data?.error?.message || 'Failed to create task');
@@ -67,7 +51,7 @@ export function useTasks() {
   const queryClient = useQueryClient();
 
   // Fetch all tasks
-  const tasksQuery = useQuery<Task[]>({
+  const tasksQuery = useQuery<TaskWithCategory[]>({
     queryKey: ['tasks'],
     queryFn: fetchTasks,
   });
@@ -92,7 +76,7 @@ export function useTasks() {
 
   // Fetch a single task (on demand)
   const getTask = (id: string) =>
-    useQuery<Task>({
+    useQuery<TaskWithCategory>({
       queryKey: ['tasks', id],
       queryFn: () => fetchTask(id),
       enabled: !!id,

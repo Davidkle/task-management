@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { withUser } from '@/lib/withUser';
+import { PaginatedResponse, TaskWithCategory } from '@/lib/types';
 
 const DEFAULT_POSITION = 1_000;
 
@@ -14,11 +15,44 @@ const TaskCreateSchema = z.object({
 });
 
 export const GET = withUser(async (req: NextRequest, user: { id: string }) => {
-  // TODO: Parse query params for pagination, filters, etc.
-  // TODO: Filter by status and categoryId
-  // TODO: Search by title and description
-  const tasks = await prisma.task.findMany({ where: { userId: user.id } });
-  return NextResponse.json({ success: true, data: [] });
+  // Parse query params for pagination
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get('page') || '1', 25);
+  const limit = parseInt(searchParams.get('limit') || '25', 25);
+  const skip = (page - 1) * limit;
+
+  // Get total count for pagination
+  const total = await prisma.task.count({
+    where: { userId: user.id },
+  });
+
+  // Get paginated tasks
+  const tasks = await prisma.task.findMany({
+    where: { userId: user.id },
+    orderBy: { position: 'desc' },
+    include: {
+      category: {
+        select: {
+          id: true,
+        },
+      },
+    },
+    skip,
+    take: limit,
+  });
+
+  const paginatedResponse: PaginatedResponse<TaskWithCategory> = {
+    data: tasks,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+
+  // Build paginated response
+  return NextResponse.json(paginatedResponse);
 });
 
 export const POST = withUser(async (req: NextRequest, user: { id: string }) => {

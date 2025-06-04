@@ -18,7 +18,12 @@ type Params = {
 };
 
 export const GET = withUser(async (req: NextRequest, user: { id: string }, { params }: Params) => {
-  const task = await prisma.task.findUnique({ where: { id: params.id, userId: user.id } });
+  const task = await prisma.task.findUnique({
+    where: { id: params.id, userId: user.id },
+    include: {
+      category: true,
+    },
+  });
   return NextResponse.json({ success: true, data: task });
 });
 
