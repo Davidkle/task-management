@@ -7,15 +7,21 @@ export type TaskCreateInput = Partial<Task>;
 
 const fetchTasks = async (params?: {
   search?: string;
-  status?: string;
-  categoryId?: string;
+  status?: string | string[];
+  categoryId?: string | string[];
   page?: number;
   limit?: number;
 }): Promise<TaskWithCategory[]> => {
   const query = new URLSearchParams();
   if (params?.search) query.set('search', params.search);
-  if (params?.status) query.set('status', params.status);
-  if (params?.categoryId) query.set('categoryId', params.categoryId);
+  if (params?.status) {
+    const status = Array.isArray(params.status) ? params.status.join(',') : params.status;
+    query.set('status', status);
+  }
+  if (params?.categoryId) {
+    const categoryId = Array.isArray(params.categoryId) ? params.categoryId.join(',') : params.categoryId;
+    query.set('categoryId', categoryId);
+  }
   if (params?.page) query.set('page', params.page.toString());
   if (params?.limit) query.set('limit', params.limit.toString());
 
@@ -62,8 +68,8 @@ const deleteTask = async (id: string): Promise<void> => {
 
 export function useTasks(filters?: {
   search?: string;
-  status?: string;
-  categoryId?: string;
+  status?: string | string[];
+  categoryId?: string | string[];
   page?: number;
   limit?: number;
 }) {

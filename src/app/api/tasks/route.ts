@@ -26,8 +26,11 @@ export const GET = withUser(async (req: NextRequest, user: { id: string }) => {
 
   // New: search and filter params
   const search = searchParams.get('search')?.trim() || '';
-  const status = searchParams.get('status') || undefined;
-  const categoryId = searchParams.get('categoryId') || undefined;
+  const statusParam = searchParams.get('status');
+  const categoryIdParam = searchParams.get('categoryId');
+
+  const status = statusParam ? statusParam.split(',').filter(Boolean) : undefined;
+  const categoryId = categoryIdParam ? categoryIdParam.split(',').filter(Boolean) : undefined;
 
   // Build Prisma where clause
   const where: Prisma.TaskWhereInput = { userId: user.id };
@@ -37,11 +40,11 @@ export const GET = withUser(async (req: NextRequest, user: { id: string }) => {
       { description: { contains: search, mode: 'insensitive' } },
     ];
   }
-  if (status) {
-    where.status = status as TaskStatus;
+  if (status && status.length > 0) {
+    where.status = status.length === 1 ? (status[0] as TaskStatus) : { in: status as TaskStatus[] };
   }
-  if (categoryId) {
-    where.categoryId = categoryId;
+  if (categoryId && categoryId.length > 0) {
+    where.categoryId = categoryId.length === 1 ? categoryId[0] : { in: categoryId };
   }
 
   // Get total count for pagination (with filters)
